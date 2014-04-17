@@ -230,8 +230,8 @@ class ProvisioningController extends AbstractActionController {
 
         $flag = new User();
         
-        $user->set_SIS_Server($config->sis_apiserver->url);
-        $user->set_PM_Server($config->pm_apiserver->url);
+        $flag->set_SIS_Server($config->sis_apiserver->url);
+        $flag->set_PM_Server($config->pm_apiserver->url);
         $result = $flag->userExists($email);
         
         $response->setContent(\Zend\Json\Json::encode(!$result));
