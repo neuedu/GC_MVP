@@ -10,7 +10,7 @@
     "require": {
         "php": ">=5.3.3",
         "zendframework/zendframework": ">2.2.0rc1",
-        "epals/epalsapi": "dev-master"
+        "epals/epalsapi": "dev-NeuEDU_DEV"
     },
     "repositories": [
         {
