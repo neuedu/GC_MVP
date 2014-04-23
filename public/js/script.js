@@ -1,5 +1,5 @@
 // true: ignore look up ,capture, validation plugin
-var debugFlag = false;
+var debugFlag = true;
 
 var hostName = window.location.host;
 
@@ -1529,8 +1529,8 @@ jQuery(document).ready(function() {
     }
     
     function onBlurLanguageOtherInput(self){
-        
-        if(self.value){
+        var sval = $.trim(self.value);
+        if(sval){
             $('#join-modal .continue').removeAttr("disabled");
             $('#join-modal .finish').removeAttr("disabled");
         }else{
