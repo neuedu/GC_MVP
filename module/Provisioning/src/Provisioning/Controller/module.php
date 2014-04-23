@@ -76,6 +76,7 @@ class Register {
         try {
 
             $up = new UserAttribute();
+            $up->tenant = $domain;
             $up->set_ElasticSearch_Server($config->elasticsearch->host . ":" . $config->elasticsearch->port);
             $up->set_SIS_Server($config->sis_apiserver->url);
             $up->loadUserAttribute($post_data['username'] . "@$domain");
@@ -108,6 +109,7 @@ class Register {
             $config = new \Zend\Config\Config(require ROOT_PATH . '/config/api.php');
             $domain = $config->tenant;
             $up = new UserAttribute();
+            $up->tenant = $domain;
             $up->set_ElasticSearch_Server($config->elasticsearch->host . ":" . $config->elasticsearch->port);
             $up->set_SIS_Server($config->sis_apiserver->url);
             $up->loadUserAttribute($post_data['username'] . "@$domain");
@@ -203,6 +205,7 @@ class Register {
         try {
 
             $up = new UserAttribute();
+            $up->tenant = $domain;
             $up->set_ElasticSearch_Server($config->elasticsearch->host . ":" . $config->elasticsearch->port);
             $up->set_SIS_Server($config->sis_apiserver->url);
             $up->loadUserAttribute($post_data['username'] . "@@$domain");
@@ -285,6 +288,7 @@ class Register {
                 $student->add();
 
                 $up = new UserAttribute();
+                $up->tenant = $domain;
                 $up->set_ElasticSearch_Server($config->elasticsearch->host . ":" . $config->elasticsearch->port);
                 $up->set_SIS_Server($config->sis_apiserver->url);
                 $up->loadUserAttribute($arr['student_username'] . "@$domain");
