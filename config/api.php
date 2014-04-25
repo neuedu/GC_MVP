@@ -13,7 +13,7 @@ return array(
         'url' => 'http://dev02.neuedu.dev.ec2.epals.net:8080/BasicESB/',
     ),
     'lookup_apiserver' => array(
-        'url' => 'http://steve.dev.epals.com',
+        'url' => 'http://apidev.dev.epals.com',
         'app_id'  => 'example',
         'app_key'  => '123',
     ),
