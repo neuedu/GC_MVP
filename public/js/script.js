@@ -1,17 +1,17 @@
 // true: ignore look up ,capture, validation plugin
-var debugFlag = true;
+var debugFlag = false;
 
 var hostName = window.location.host;
 
 jQuery(document).ready(function() {
-    
+
     //identify code init
-    
+
     $(function() {
-        
+
         btnContinue.removeAttr("disabllocaled");
-        
-        identifyCodeInput.blur(function(){
+
+        identifyCodeInput.blur(function() {
             ifIdentifyPass();
         });
 
@@ -22,7 +22,7 @@ jQuery(document).ready(function() {
                 $("#jquery_jplayer").jPlayer("setMedia", {mp3: 'http://webmail.epals.com/securimage/securimage_play.php'});
             },
             timeupdate: function(event) {
-                
+
             },
             play: function(event) {
                 $('#playlink').html('Playing audio...');
@@ -40,21 +40,21 @@ jQuery(document).ready(function() {
             wmode: "window",
             errorAlerts: false,
             warningAlerts: false,
-            Context: {solution:'html, flash', supplied:'mp3'}
+            Context: {solution: 'html, flash', supplied: 'mp3'}
 
         });
     });
-   
-    
-    $("#getanother").live("click",function(){
-        
-        $('img[id=captcha]').attr('src','http://webmail.epals.com/securimage/securimage_show.php?' + Math.random());
+
+
+    $("#getanother").live("click", function() {
+
+        $('img[id=captcha]').attr('src', 'http://webmail.epals.com/securimage/securimage_show.php?' + Math.random());
         $('input[name=captcha_field]').val('');
-        $('#join-modal .continue').attr("disabled","disabled");
-        
+        $('#join-modal .continue').attr("disabled", "disabled");
+
         return false;
     });
- 
+
     // show width ---------------------------------------- //
     var autoWidthElems = $('.calc-widths .content').filter(function(index) {
         var h2 = $(this).find('h2').text().toLowerCase();
@@ -103,7 +103,7 @@ jQuery(document).ready(function() {
 
     // read query parameters
     function getParameterByName(name) {
-        
+
         name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
         var regexS = "[\\?&]" + name + "=([^&#]*)";
         var regex = new RegExp(regexS);
@@ -252,7 +252,7 @@ jQuery(document).ready(function() {
         var btnJoin = $('header .btn-join');
         var btnComplete = $('header .btn-complete');
         var btnUser = $('header .btn-user');
-        
+
         var identifyCodeInput = $('input[name="captcha_field"]');
 
         var roles = ['teacher', 'teacher_homeschool', 'parent', 'student', 'ua-student', 'mentor', 'other', 'form-demo'];
@@ -312,10 +312,42 @@ jQuery(document).ready(function() {
 
         // step navigation --------------------------------- //
 
-        // step ahead
-        btnContinue.click(function() {   
+        //click join epals community
+        btnJoin.click(function(event) {
+            var roles = new Array();
+            var flag = event;
+            $.ajax({
+                type: 'post',
+                url: 'http://' + hostName + '/provisioning/Provisioning/ajaxLoadRoles',
+                dataType: 'json',
+                async: false,
+                success: function(data) {
+                    if (data == 'failed' || data == '')
+                    {
+                        alert('Get Roles Failed');
+                        flag.stopPropagation();
+                        window.location.reload();
+                        return false;
+                    }
+                    $('.step-one').html('');
+                    $('.step-one').append("<h4 class='modal-title''>ARE YOU A...</h4>");
+                    var roles = data;
+                    for (var i = 0; i < roles.length; i++) {
+                        $('.step-one').append("<div class='radio' id='get_" + roles[i].roleName + "'><label><input type='radio' name='role' value='" + roles[i].roleId + "'><strong>" + roles[i].roleName + "</strong></label></div><hr id='hr_" + roles[i].roleName + "' style='margin:3px 0px;'>");
+                    }
 
-            
+                    $('.step-one').find("input[type='radio']:first").attr("checked", true);
+                    $('#get_Mentor').hide();
+                    $('#hr_Mentor').hide();
+                }
+
+            });
+        });
+
+        // step ahead
+        btnContinue.click(function() {
+
+
             if (currentStep == 1) {
 
 
@@ -326,27 +358,27 @@ jQuery(document).ready(function() {
                 $('.step[data-step="1"]').hide();
                 currentSlide = $('.step[data-step="2"][data-role="' + role + '"]');
                 currentSlide.show();
-                
+
                 //alert("currentStep="+currentStep+";");
                 //alert("role="+role);
 
             } else {
-                
+
                 // validate the page
-                
-                var currentForm = $("form#form-"+role+"-"+(currentStep.valueOf("int")-1));
+
+                var currentForm = $("form#form-" + role + "-" + (currentStep.valueOf("int") - 1));
                 currentForm.submit();
-                if(currentForm.find("label.error:visible").size()>0){
-                    
-                    if(debugFlag == false){
-                        return ;
+                if (currentForm.find("label.error:visible").size() > 0) {
+
+                    if (debugFlag == false) {
+                        return;
                     }
                 }
 
                 if (currentStep == 2 && role == 'student') {
-                    
+
                     var splitArr = $('#student-birthday').val().split('-');
-                    if(splitArr.length == 1){
+                    if (splitArr.length == 1) {
                         splitArr = $('#student-birthday').val().split('/');
                     }
                     var now = new Date();
@@ -361,31 +393,31 @@ jQuery(document).ready(function() {
                     }
                 }
 
-                
-                if (!validateCheck(role,currentStep)){
-                    
-                    if(!debugFlag){
-                        
+
+                if (!validateCheck(role, currentStep)) {
+
+                    if (!debugFlag) {
+
                         alert("User Creation Failed, possible reason could be : The email address has been already taken ,or network problems");
                         return;
                     }
                 }
-                           
+
                 currentStep++;
 
                 currentSlide = $('.step[data-step="' + currentStep + '"][data-role="' + role + '"]');
-                
+
 
                 // create main account
                 username = $('.step[data-role="' + role + '"] #firstname').val();
-                    //username = $('.step[data-role="' + role + '"] ipnut[id="firstname"]').val();
-                    if (username == '') {
-                        username = '{First Name}';
-                    }
+                //username = $('.step[data-role="' + role + '"] ipnut[id="firstname"]').val();
+                if (username == '') {
+                    username = '{First Name}';
+                }
 
-                    $('.btn-user .username').text(username);
-                    $('.step[data-role="' + role + '"] h4 .name').text(username);
-                
+                $('.btn-user .username').text(username);
+                $('.step[data-role="' + role + '"] h4 .name').text(username);
+
                 if (!accountCreated && currentSlide.attr('data-account-created') == 'main') {
                     accountCreated = true;
                     currentSlide.find('.alert-main-account').fadeIn(200);
@@ -450,56 +482,56 @@ jQuery(document).ready(function() {
                     });
                 }
             }
-            
+
             //when a new step start, test if there's a identify graph in page
             if ($('input[name="captcha_field"]').is(":visible") == true) {
 
-                if(debugFlag){
-                    return ;
+                if (debugFlag) {
+                    return;
                 }
                 //disable btnContinue
-                $(this).attr("disabled","disabled");
+                $(this).attr("disabled", "disabled");
             }
-            
-            if($("#students_language_div").size()>0){
+
+            if ($("#students_language_div").size() > 0) {
                 //$(this).attr("disabled","disabled");
             }
-            
+
             //when a nuew step start , if there's a country selector in new step,ajax load it
-            if($('.countrySelect').is(":visible") == true) {
+            if ($('.countrySelect').is(":visible") == true) {
 
                 $('.countrySelect:visible').each(function() {
                     ajaxCountry($(this));
                 });
             }
-            
+
             //when a nuew step start , if there's a grade selector in new step,ajax load it
-            if($('.gradeDropSelect').is(":visible") == true) {
+            if ($('.gradeDropSelect').is(":visible") == true) {
 
                 $('.gradeDropSelect:visible').each(function() {
                     ajaxGradeDrop($(this));
                 });
             }
-            
+
         });
-        
-        btnDashboard.click(function(){
-            
+
+        btnDashboard.click(function() {
+
             var username = $("input[id='username']:first").val();
-            window.location.href = "http://"+hostName+"/application/Index/login?username="+username;
+            window.location.href = "http://" + hostName + "/application/Index/login?username=" + username;
         });
 
         btnCancel.click(function() {
             $('.step').hide();
-             
+
             role = 'all';
-            currentStep='1';
+            currentStep = '1';
 
             $('#join-modal .continue').removeAttr("disabled");
             currentSlide = $('.step[data-step="' + currentStep + '"][data-role="' + role + '"]');
             currentSlide.show();
-            
-            
+
+
             ajaxpost();
         });
 
@@ -555,15 +587,15 @@ jQuery(document).ready(function() {
 
         // show thank you screen
         btnFinish.click(function() {
-            
-            var currentForm = $("form#form-"+role+"-"+(currentStep.valueOf("int")-1));
+
+            var currentForm = $("form#form-" + role + "-" + (currentStep.valueOf("int") - 1));
             currentForm.submit();
-            if(currentForm.find("label.error:visible").size()>0){
-                if(debugFlag == false){
-                    return ;
+            if (currentForm.find("label.error:visible").size() > 0) {
+                if (debugFlag == false) {
+                    return;
                 }
             }
-            
+
             ajaxpost();
             //ajax request end
 
@@ -587,12 +619,12 @@ jQuery(document).ready(function() {
             $('.step').hide();
             currentSlide = $('.step[data-step="' + currentStep + '"][data-role="' + role + '"]');
             currentSlide.show();
-            
+
             //when step back, test if there's a identify graph in page
             if ($('input[name="captcha_field"]').is(":visible") == false) {
 
                 //enable btnContinue
-                btnContinue.attr("disabled",false);
+                btnContinue.attr("disabled", false);
             }
         });
 
@@ -611,21 +643,21 @@ jQuery(document).ready(function() {
 
         // show underage student thank you screen
         btnParentEmail.click(function() {
-            
-            var emailInputVal = $("#uemail").val() ;
 
-            var emailReg = /^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))$/i ;
-            if(emailInputVal == "" ){
+            var emailInputVal = $("#uemail").val();
+
+            var emailReg = /^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))$/i;
+            if (emailInputVal == "") {
                 $("#sendEmailError").html("");
                 $("#sendEmailError").html("please enter email address");
-                return ;
+                return;
             }
-            if(!emailReg.test(emailInputVal)){
+            if (!emailReg.test(emailInputVal)) {
                 $("#sendEmailError").html("");
                 $("#sendEmailError").html("The email address you have entered is not in the proper format, please re-enter it.");
-                return ;
+                return;
             }
-            
+
             var firstname = $('.step[data-role="' + role + '"] #firstname').val();
             var lastname = $('.step[data-role="' + role + '"] #lastname').val();
             var uemail = $('#uemail').val();
@@ -633,7 +665,7 @@ jQuery(document).ready(function() {
 
             $.ajax({
                 type: 'post',
-                url: 'http://'+hostName+'/provisioning/Provisioning/ajaxregist',
+                url: 'http://' + hostName + '/provisioning/Provisioning/ajaxregist',
                 dataType: 'html',
                 data: {
                     role: role,
@@ -663,7 +695,7 @@ jQuery(document).ready(function() {
         });
 
         // teacher step 4 - add new class
-	$('div[data-role="teacher"]').children(".step .add-class").click(function() {
+        $('div[data-role="teacher"]').children(".step .add-class").click(function() {
             var classDiv = $('.step[data-step="4"][data-role="teacher"] .class:first');
             classDiv
                     .clone()
@@ -763,68 +795,68 @@ jQuery(document).ready(function() {
                     .appendTo(accord)
 
             accord.accordion(accordionOptions);
-            
+
             // countrygradeddd
-            $('.countrySelect').unbind().bind("click",function() {
+            $('.countrySelect').unbind().bind("click", function() {
                 ajaxCountry($(this));
             });
-            $('.gradeDropSelect').unbind().bind("click",function() {
+            $('.gradeDropSelect').unbind().bind("click", function() {
                 ajaxGradeDrop($(this));
             });
-            
+
             // hide error
             accord.find('.panel:last').find("label.error").hide();
         });
 
         /*
-        // validation -------------------------------------- //
-        var passwordSuggestedChars = '1|2|3|4|5|6|7|8|9|0';
+         // validation -------------------------------------- //
+         var passwordSuggestedChars = '1|2|3|4|5|6|7|8|9|0';
+         
+         // username
+         $('input[name="username"]').keyup(function() {
+         if ($(this).val() == '') {
+         $(this).parent()
+         .find('.notice-fail').css('display', 'none').end()
+         .find('.notice-success').css('display', 'none');
+         } else if ($(this).val().toLowerCase() == 'error') {
+         $(this).parent()
+         .find('.notice-fail').css('display', 'inline-block').end()
+         .find('.notice-success').css('display', 'none');
+         } else {
+         $(this).parent()
+         .find('.notice-fail').css('display', 'none').end()
+         .find('.notice-success').css('display', 'inline-block');
+         }
+         });
+         
+         // password
+         $('input[name="password"]').keyup(function() {
+         var val = $(this).val();
+         
+         if (val == '') {
+         $(this).parent()
+         .find('.notice-fail').css('display', 'none').end()
+         .find('.notice-weak').css('display', 'none').end()
+         .find('.notice-success').css('display', 'none');
+         } else if (val.length < 8) {
+         $(this).parent()
+         .find('.notice-fail').css('display', 'inline-block').end()
+         .find('.notice-weak').css('display', 'none').end()
+         .find('.notice-success').css('display', 'none');
+         } else if (new RegExp(passwordSuggestedChars).test(val)) {
+         $(this).parent()
+         .find('.notice-fail').css('display', 'none').end()
+         .find('.notice-weak').css('display', 'none').end()
+         .find('.notice-success').css('display', 'inline-block');
+         } else {
+         $(this).parent()
+         .find('.notice-fail').css('display', 'none').end()
+         .find('.notice-weak').css('display', 'inline-block').end()
+         .find('.notice-success').css('display', 'none');
+         }
+         });
+         */
 
-        // username
-        $('input[name="username"]').keyup(function() {
-            if ($(this).val() == '') {
-                $(this).parent()
-                        .find('.notice-fail').css('display', 'none').end()
-                        .find('.notice-success').css('display', 'none');
-            } else if ($(this).val().toLowerCase() == 'error') {
-                $(this).parent()
-                        .find('.notice-fail').css('display', 'inline-block').end()
-                        .find('.notice-success').css('display', 'none');
-            } else {
-                $(this).parent()
-                        .find('.notice-fail').css('display', 'none').end()
-                        .find('.notice-success').css('display', 'inline-block');
-            }
-        });
-
-        // password
-        $('input[name="password"]').keyup(function() {
-            var val = $(this).val();
-
-            if (val == '') {
-                $(this).parent()
-                        .find('.notice-fail').css('display', 'none').end()
-                        .find('.notice-weak').css('display', 'none').end()
-                        .find('.notice-success').css('display', 'none');
-            } else if (val.length < 8) {
-                $(this).parent()
-                        .find('.notice-fail').css('display', 'inline-block').end()
-                        .find('.notice-weak').css('display', 'none').end()
-                        .find('.notice-success').css('display', 'none');
-            } else if (new RegExp(passwordSuggestedChars).test(val)) {
-                $(this).parent()
-                        .find('.notice-fail').css('display', 'none').end()
-                        .find('.notice-weak').css('display', 'none').end()
-                        .find('.notice-success').css('display', 'inline-block');
-            } else {
-                $(this).parent()
-                        .find('.notice-fail').css('display', 'none').end()
-                        .find('.notice-weak').css('display', 'inline-block').end()
-                        .find('.notice-success').css('display', 'none');
-            }
-        });
-        */
-        
         // open modal on step specified in query string ---- //
         //alert(window.location.search);
         var qRole = getParameterByName('role');
@@ -900,7 +932,7 @@ jQuery(document).ready(function() {
         var lastname = $('.step[data-role="' + role + '"] #lastname').val();
         var gender = $('.step[data-role="' + role + '"] #gender').val();
         var email = $('.step[data-role="' + role + '"] #email').val();
-        
+
         var username = $('.step[data-role="' + role + '"] #username').val();
         var password = $('.step[data-role="' + role + '"] #password').val();
         var birthday = $('.step[data-role="' + role + '"] #birthday').val();
@@ -931,7 +963,7 @@ jQuery(document).ready(function() {
 
         var school_code = $('.step[data-role="' + role + '"] #school_code').val();
 
-  
+
         var $subjectArr = $('.step[data-step="4"][data-role="' + role + '"] .dynticSub');
         //var subCount = $subjectArr.size();
 
@@ -944,9 +976,9 @@ jQuery(document).ready(function() {
             if ($(this).find("input#class_subject").val() != "") {
 
                 var jsonSubObj = new Object();
-                
-                if(role == "teacher" ){
-                    
+
+                if (role == "teacher") {
+
                     jsonSubObj['subjectName'] = $(this).find("input#class_subject").val();
 
 
@@ -971,17 +1003,17 @@ jQuery(document).ready(function() {
                             jsonSubObj['studentAge'].push($(this).attr("id"));
                         });
                     }
-                    
-                }else if(role == "teacher_homeschool"){
-                    
+
+                } else if (role == "teacher_homeschool") {
+
                     jsonSubObj['subjectName'] = $(this).find("input#class_title").val();
 
                     jsonSubObj['studentAge'] = $(this).find("select#student-age").val();
-                    
+
                     jsonSubObj['studentsNumber'] = $(this).find("input#number_of_students").val();
 
                 }
-                
+
                 subArr.push(jsonSubObj);
                 //alert($(this).find("input#number_of_students").val());
             }
@@ -1022,17 +1054,17 @@ jQuery(document).ready(function() {
         //step 3 underage
         var email = $('.step[data-role="' + role + '"] #email').val();
         var country = $('.step[data-role="' + role + '"] #country').val();
-        
+
         //parent step3(add children)
-        
+
         var psubArr = new Array();
-        
+
         var accordion = $(".accordion.accord-parent");
-        var panelList = accordion.find("div[id*='-panel-']"); 
-        if(panelList.size() < 1){
-            panelList = accordion ;
+        var panelList = accordion.find("div[id*='-panel-']");
+        if (panelList.size() < 1) {
+            panelList = accordion;
         }
-        
+
         panelList.each(function() {
 
             if ($(this).find("input#student_first").val() != "") {
@@ -1052,14 +1084,14 @@ jQuery(document).ready(function() {
                 jsonSubObj['student_grade_other'] = $(this).find("input#student_grade_other").val();
                 jsonSubObj['student_your_grade'] = $(this).find("select#student_your-grade").val();
 
-                
+
                 //抽取多选的school_type
                 var temSelectedSchoolType = $(this).find('#school_type_div input:checked');
                 if (temSelectedSchoolType.size() > 0) {
                     jsonSubObj['school_type'] = new Array();
                     temSelectedSchoolType.each(function() {
                         jsonSubObj['school_type'].push($(this).attr("id"));
-            
+
                     });
                 }
 
@@ -1071,11 +1103,11 @@ jQuery(document).ready(function() {
             }
 
         });
-        
+
 
         $.ajax({
             type: 'post',
-            url: 'http://'+hostName+'/provisioning/Provisioning/ajaxregist',
+            url: 'http://' + hostName + '/provisioning/Provisioning/ajaxregist',
             dataType: 'html',
             async: true,
             data: {
@@ -1126,7 +1158,7 @@ jQuery(document).ready(function() {
                 hsstudentsNumber: hsstudentsNumber,
                 grade_other: grade_other,
                 your_grade: your_grade,
-                psubArr:psubArr
+                psubArr: psubArr
 
             },
             success: function(msg) {
@@ -1139,61 +1171,50 @@ jQuery(document).ready(function() {
 
 
     }
-    
+
     // load Roles separate
     $(function() {
-        
+
         //template use
-        
-        if(debugFlag){
-            
-            var roles = [{"roleId":"teacher","roleName":"Teacher"},{"roleId":"teacher_homeschool","roleName":"Home-School Teacher"},{"roleId":"student","roleName":"Student"},{"roleId":"parent","roleName":"Parent \/ Guardian"},{"roleId":"mentor","roleName":"Mentor"}];
-            //var roles = [{"roleId":"teacher","roleName":"Teacher"},{"roleId":"teacher_homeschool","roleName":"Home-School Teacher"},{"roleId":"student","roleName":"Student"},{"roleId":"parent","roleName":"Parent \/ Guardian"}];
-            for (var i = 0; i < roles.length; i++) {
-                $('.step-one').append("<div class='radio'><label><input type='radio' name='role' value='" + roles[i].roleId + "'><strong>" + roles[i].roleName + "</strong></label></div><hr style='margin:3px 0px;'>");
-            }
-            $('.step-one').find("input[type='radio']:first").attr("checked",true) ;
-            return ;
-        }
-        
-        var roles = new Array();
-        $.ajax({
-            type: 'post',
-            url: 'http://'+hostName+'/provisioning/Provisioning/ajaxLoadRoles',
-            dataType: 'json',
-            async: false,
-            success: function(data) {
-                var roles = data;
-                for (var i = 0; i < roles.length; i++) {
-                    $('.step-one').append("<div class='radio' id='get_"+roles[i].roleName+"'><label><input type='radio' name='role' value='" + roles[i].roleId + "'><strong>" + roles[i].roleName + "</strong></label></div><hr id='hr_"+roles[i].roleName+"' style='margin:3px 0px;'>");
-                }
-                
-                $('.step-one').find("input[type='radio']:first").attr("checked",true) ;
-                $('#get_Mentor').hide();
-                $('#hr_Mentor').hide();
-            }
-            
-        });
+        /*
+         if(debugFlag){
+         
+         var roles = [{"roleId":"teacher","roleName":"Teacher"},{"roleId":"teacher_homeschool","roleName":"Home-School Teacher"},{"roleId":"student","roleName":"Student"},{"roleId":"parent","roleName":"Parent \/ Guardian"},{"roleId":"mentor","roleName":"Mentor"}];
+         //var roles = [{"roleId":"teacher","roleName":"Teacher"},{"roleId":"teacher_homeschool","roleName":"Home-School Teacher"},{"roleId":"student","roleName":"Student"},{"roleId":"parent","roleName":"Parent \/ Guardian"}];
+         for (var i = 0; i < roles.length; i++) {
+         $('.step-one').append("<div class='radio'><label><input type='radio' name='role' value='" + roles[i].roleId + "'><strong>" + roles[i].roleName + "</strong></label></div><hr style='margin:3px 0px;'>");
+         }
+         $('.step-one').find("input[type='radio']:first").attr("checked",true) ;
+         return ;
+         }
+         */
+
     });
-    
-    
-    
+
+
+
     // load Roles separate
-     $(function() {
+    $(function() {
         $('#teacherStep4Continue').click(function() {
-            
-            if(debugFlag){
-                
-                return ;
+
+            if (debugFlag) {
+
+                return;
             }
             if ($('.school_type_div').children('label').length == 0) {
                 var school_types = new Array();
                 $.ajax({
                     type: 'post',
-                    url: 'http://'+hostName+'/provisioning/Provisioning/ajaxLoadSchoolType',
+                    url: 'http://' + hostName + '/provisioning/Provisioning/ajaxLoadSchoolType',
                     dataType: 'json',
                     async: false,
                     success: function(data) {
+                        if (data == 'failed' || data == '')
+                        {
+                            alert('Get SchoolType Failed');
+                            window.location.reload();
+                            return false;
+                        }
                         school_types = data;
                     }
                 });
@@ -1206,11 +1227,11 @@ jQuery(document).ready(function() {
             }
         });
     });
-    
+
     $('.ageRangeSelect').click(function() {
         ajaxAgeSelect($(this).siblings(".ageRangeOption"));
     });
-    
+
     $('.ageDropSelect').click(function() {
         if ($(this).children("option").length <= 1) {
             // ajax
@@ -1220,321 +1241,339 @@ jQuery(document).ready(function() {
             }
         }
     });
-    
-    $('.gradeSelect').unbind().bind("click",function(){
+
+    $('.gradeSelect').unbind().bind("click", function() {
         ajaxGradeSelect($(this).siblings(".gradeOption"));
     });
-    
-    $('.gradeDropSelect').unbind().bind("click",function() {
+
+    $('.gradeDropSelect').unbind().bind("click", function() {
         ajaxGradeDrop($(this));
     });
 });
 
-    function ajaxCountry(thisItem) {
-        
-        // if it has value, no ajax 
-        if (thisItem.children("option").length <= 1) {
-            // ajax
-            var countrys = new Array();
-            var selectSelf = thisItem;
-            $.ajax({
-                type: 'post',
-                url: 'http://'+hostName+'/provisioning/Provisioning/ajaxLoadCountrys',
-                dataType: 'json',
-                async: true,
-                success: function(data) {
-                    countrys = data;
-                    //thisItem.append("<option value='' selected='selected'>Please select</option>");
-                    for (var i = 0; i < countrys.length; i++) {
-                        selectSelf.append("<option value='" + countrys[i].countryCode + "'>" + countrys[i].countryName + "</option>");
-                    }
-                }
-            });
-            
-        }
-    }
-    
-    function getGrade() {
-        var grades = new Array();
+function ajaxCountry(thisItem) {
+
+    // if it has value, no ajax 
+    if (thisItem.children("option").length <= 1) {
+        // ajax
+        var countrys = new Array();
+        var selectSelf = thisItem;
         $.ajax({
             type: 'post',
-            url: 'http://'+hostName+'/provisioning/Provisioning/ajaxLoadGrade',
+            url: 'http://' + hostName + '/provisioning/Provisioning/ajaxLoadCountrys',
             dataType: 'json',
-            async: false,
+            async: true,
             success: function(data) {
-                grades = data;
-            }
-        });
-        return grades;
-    }
-    
-    function ajaxGradeSelect(gradeOption) {
-        // if it has value, no ajax
-        
-        //alert(ageOption.children("li").length);
-        if (gradeOption.children("li").length == 0) {
-            // ajax
-            var grades = getGrade();
-            // default value
-            for (var i = 0; i < grades.length; i++) {
-                //alert("<li><label for='" + grades[i].gradeId + "'><input type='checkbox' name='" + grades[i].gradeId + "' id='" + grades[i].gradeId + "'>" + grades[i].gradeName + "</label></li>");
-                gradeOption.append("<li><label for='" + grades[i].gradeId + "'><input type='checkbox' name='" + grades[i].gradeId + "' id='" + grades[i].gradeId + "'>" + grades[i].gradeName + "</label></li>");
-            }
-        }
-    }
-    
-    function getAgeRange() {
-        var age_ranges = new Array();
-        $.ajax({
-            type: 'post',
-            url: 'http://'+hostName+'/provisioning/Provisioning/ajaxLoadAgeRange',
-            dataType: 'json',
-            async: false,
-            success: function(data) {
-                age_ranges = data;
-            }
-        });
-        return age_ranges;
-    }
-    
-    function ajaxAgeSelect(ageOption) {
-        // if it has value, no ajax
-        if (ageOption.children("li").length == 0) {
-            // ajax
-            var age_ranges = getAgeRange();
-            // default value
-            for (var i = 0; i < age_ranges.length; i++) {
-                ageOption.append("<li><label for='" + age_ranges[i].ageId + "'><input type='checkbox' name='" + age_ranges[i].ageId + "' id='" + age_ranges[i].ageId + "'>" + age_ranges[i].ageRange + "</label></li>");
-            }
-        }
-    }
-    
-    function ajaxGradeDrop(thisItem) {
-        if (thisItem.children("option").length <= 1) {
-            // ajax
-            var grades = getGrade();
-            for (var i = 0; i < grades.length; i++) {
-                thisItem.append("<option value='" + grades[i].gradeId + "'>" + grades[i].gradeName + "</option><li>");
-            }
-        }
-    }
-
-    // --------------------------------------------------- //
-    // global                                              //
-    // --------------------------------------------------- //
-
-
-    //template usage: 
-    //if identify succes,set The Continue button enable
-    function ifIdentifyPass() {
-
-        if ($('input[name="captcha_field"]').is(":visible") == false) {
-            return true;
-        }
-
-        var code = $('input[name="captcha_field"]:visible').val();
-        
-        $.ajax({
-            url: 'http://webmail.epals.com/public_rest/captcha_valid',
-            dataType: 'jsonp',
-            async: false,
-            data: {'code': code},
-            success: function(data) {
-                
-                if (data.passed)
+                if (data == 'failed' || data == '')
                 {
-                    //alert("captcha passed");
-                    $('#join-modal .continue').removeAttr("disabled");
-                    //btnContinue.attr("disabled",false);
-                    return true;
-                } else {
-                    //alert("captcha FAIL");
-                    $('#getanother').click();
-                    $('input[name="captcha_field"]').val('');
-                    $('#join-modal .continue').attr("disabled","disabled");
-                    
-                    //alert("Capture identify error,Please re-enter it.");
+                    alert('Get Country Failed');
+                    window.location.reload();
                     return false;
                 }
+                countrys = data;
+                //thisItem.append("<option value='' selected='selected'>Please select</option>");
+                for (var i = 0; i < countrys.length; i++) {
+                    selectSelf.append("<option value='" + countrys[i].countryCode + "'>" + countrys[i].countryName + "</option>");
+                }
             }
         });
 
     }
-    
-    // collect base info (Fist step) save into neo4j
-    function ajaxPostBaseInfo(role,currentStep){
-        
-        var firstname = $('.step[data-role="' + role + '"] #firstname').val();
-        var lastname = $('.step[data-role="' + role + '"] #lastname').val();
-        var gender = $('.step[data-role="' + role + '"] #gender').val();
-        var email = $('.step[data-role="' + role + '"] #email').val();
-        var username = $('.step[data-role="' + role + '"] #username').val();
-        var password = $('.step[data-role="' + role + '"] #password').val();
-        var birthday = $('.step[data-role="' + role + '"] #birthday').val();
-        var title = $('.step[data-role="' + role + '"] #title').val();
-        var tcountry = $('.step[data-role="' + role + '"] select[name="tcountry"]').val();
-        
-        var email_vertify = $('.step[data-role="' + role + '"] #email_vertify').val();
-        var password_vertify = $('.step[data-role="' + role + '"] #password_vertify').val();
-        
-        var flag ;
-        
-        $.ajax({
-            type: 'post',
-            url: 'http://'+hostName+'/provisioning/Provisioning/ajaxPostBaseInfo',
-            dataType: 'json',
-            async: false,
-            data: {
-                role: role,
-                currentStep: currentStep,
-                //common info
-                firstname: firstname,
-                lastname: lastname,
-                gender: gender,
-                email: email,
-                username: username,
-                password: password,
-                birthday: birthday,
-                //sbirthday: sbirthday,
-                title: title,
-                tcountry: tcountry,
-                email_vertify:email_vertify,
-                password_vertify:password_vertify
-                //country: country
-               
+}
 
-            },
-            success: function(msg) {
-                
-                flag =  msg ;
-                
-            },error: function(msg){
-                flag =  msg ;
+function getGrade() {
+    var grades = new Array();
+    $.ajax({
+        type: 'post',
+        url: 'http://' + hostName + '/provisioning/Provisioning/ajaxLoadGrade',
+        dataType: 'json',
+        async: false,
+        success: function(data) {
+            if (data == 'failed' || data == '')
+            {
+                alert('Get Grade Failed');
+                window.location.reload();
+                return false;
             }
-        });
-        
-        if(flag == true){
-            return true;
-        }else{
-            return false ;
+            grades = data;
         }
-        
-    }
-    
-    //form submit validation check :email ; password
-    //return :true/false 
-    function checkEmail(role){
-        
-            
-        //var role = $('input[name="role"]:checked', '#join-modal').val();  
-        
-        //check email
-        var email = $('.step[data-role="' + role + '"] #email');
-        var email_vertify = $('.step[data-role="' + role + '"] #email_vertify');
-        
-        if(email.val() != email_vertify.val()){
-            
-            alert("The email addresses you have entered do not match, please re-enter them. ") ;
-            email.val("");
-            email_vertify.val("");
-            email.focus();
-            
-            return false ;
-        }
-        
-        var regEmail = /[a-z0-9-]{1,30}@[a-z0-9-]{1,65}.[a-z]{3}/ ;
+    });
+    return grades;
+}
 
-        var emailFlag = regEmail.test(email.val());
-        
-        if(!emailFlag){
-            
-            alert("Please enter correct Email-address.");
-            email.val("");
-            email_vertify.val("");
-            email.focus();
-            
-            return false ;
-        }
-        
-        //check password 
-        var password = $('.step[data-role="' + role + '"] #password');
-        var email_vertify = $('.step[data-role="' + role + '"] #password_vertify');
-        
-        if(password.val() != email_vertify.val()){
-            
-            alert("The password you have entered do not match, please re-enter them. ") ;
-            password.val("");
-            email_vertify.val("");
-            password.focus();
-            
-            return false ;
-        }
-        
-        var regForASCII = /^[x00-x7f]+$/;
-        
-        if (! regForASCII.test(password.val())){
-            
-            alert("The password you've requested does not match the ePals password requirements, please choose another password.");
-            
-            return false;
-        }
-        
-        var passwordLength = password.val().toString().length;
-        
-        if(passwordLength < 6){
-            
-            alert("The password you've requested does not match the ePals password requirements, please choose another password.");
-            password.val("");
-            email_vertify.val("");
-            password.focus();
-            
-            return false ;
-        }
-        
-        return true ;
+function ajaxGradeSelect(gradeOption) {
+    // if it has value, no ajax
 
+    //alert(ageOption.children("li").length);
+    if (gradeOption.children("li").length == 0) {
+        // ajax
+        var grades = getGrade();
+        // default value
+        for (var i = 0; i < grades.length; i++) {
+            //alert("<li><label for='" + grades[i].gradeId + "'><input type='checkbox' name='" + grades[i].gradeId + "' id='" + grades[i].gradeId + "'>" + grades[i].gradeName + "</label></li>");
+            gradeOption.append("<li><label for='" + grades[i].gradeId + "'><input type='checkbox' name='" + grades[i].gradeId + "' id='" + grades[i].gradeId + "'>" + grades[i].gradeName + "</label></li>");
+        }
     }
-    
-    function validateCheck(role,currentStep){
+}
 
-        var flag ;
-        if(role != "student" && currentStep == "2"){
-            flag = ajaxPostBaseInfo(role,currentStep);
-             
-        }else if(role =="student" && currentStep == "3"){
-            
-            flag =  ajaxPostBaseInfo(role,currentStep);
-        }else{
-            
-            flag = true ;
+function getAgeRange() {
+    var age_ranges = new Array();
+    $.ajax({
+        type: 'post',
+        url: 'http://' + hostName + '/provisioning/Provisioning/ajaxLoadAgeRange',
+        dataType: 'json',
+        async: false,
+        success: function(data) {
+            if (data == 'failed' || data == '')
+            {
+                alert('error');
+                window.location.reload();
+                return false;
+            }
+            age_ranges = data;
         }
-        
-        return flag ;
-    }
-    
-    function onChangeLanguageOtherCheckbox(self){
-        
-        if(self.checked === true){
-            //user once select the checkbox
-            $('#join-modal .continue').attr("disabled","disabled");
-            $('#join-modal .finish').attr("disabled","disabled");
-            $(self).parent().next("input").focus();
-            
-        }else{
-            
-            $('#join-modal .continue').removeAttr("disabled");
-            $('#join-modal .finish').removeAttr("disabled");
-        }
-        
-    }
-    
-    function onBlurLanguageOtherInput(self){
-        var sval = $.trim(self.value);
-        if(sval){
-            $('#join-modal .continue').removeAttr("disabled");
-            $('#join-modal .finish').removeAttr("disabled");
-        }else{
-            $('#join-modal .continue').attr("disabled","disabled");
-            $('#join-modal .finish').attr("disabled","disabled");
+    });
+    return age_ranges;
+}
+
+function ajaxAgeSelect(ageOption) {
+    // if it has value, no ajax
+    if (ageOption.children("li").length == 0) {
+        // ajax
+        var age_ranges = getAgeRange();
+        // default value
+        for (var i = 0; i < age_ranges.length; i++) {
+            ageOption.append("<li><label for='" + age_ranges[i].ageId + "'><input type='checkbox' name='" + age_ranges[i].ageId + "' id='" + age_ranges[i].ageId + "'>" + age_ranges[i].ageRange + "</label></li>");
         }
     }
+}
+
+function ajaxGradeDrop(thisItem) {
+    if (thisItem.children("option").length <= 1) {
+        // ajax
+        var grades = getGrade();
+        for (var i = 0; i < grades.length; i++) {
+            thisItem.append("<option value='" + grades[i].gradeId + "'>" + grades[i].gradeName + "</option><li>");
+        }
+    }
+}
+
+// --------------------------------------------------- //
+// global                                              //
+// --------------------------------------------------- //
+
+
+//template usage: 
+//if identify succes,set The Continue button enable
+function ifIdentifyPass() {
+
+    if ($('input[name="captcha_field"]').is(":visible") == false) {
+        return true;
+    }
+
+    var code = $('input[name="captcha_field"]:visible').val();
+
+    $.ajax({
+        url: 'http://webmail.epals.com/public_rest/captcha_valid',
+        dataType: 'jsonp',
+        async: false,
+        data: {'code': code},
+        success: function(data) {
+
+            if (data.passed)
+            {
+                //alert("captcha passed");
+                $('#join-modal .continue').removeAttr("disabled");
+                //btnContinue.attr("disabled",false);
+                return true;
+            } else {
+                //alert("captcha FAIL");
+                $('#getanother').click();
+                $('input[name="captcha_field"]').val('');
+                $('#join-modal .continue').attr("disabled", "disabled");
+
+                //alert("Capture identify error,Please re-enter it.");
+                return false;
+            }
+        }
+    });
+
+}
+
+// collect base info (Fist step) save into neo4j
+function ajaxPostBaseInfo(role, currentStep) {
+
+    var firstname = $('.step[data-role="' + role + '"] #firstname').val();
+    var lastname = $('.step[data-role="' + role + '"] #lastname').val();
+    var gender = $('.step[data-role="' + role + '"] #gender').val();
+    var email = $('.step[data-role="' + role + '"] #email').val();
+    var username = $('.step[data-role="' + role + '"] #username').val();
+    var password = $('.step[data-role="' + role + '"] #password').val();
+    var birthday = $('.step[data-role="' + role + '"] #birthday').val();
+    var title = $('.step[data-role="' + role + '"] #title').val();
+    var tcountry = $('.step[data-role="' + role + '"] select[name="tcountry"]').val();
+
+    var email_vertify = $('.step[data-role="' + role + '"] #email_vertify').val();
+    var password_vertify = $('.step[data-role="' + role + '"] #password_vertify').val();
+
+    var flag;
+
+    $.ajax({
+        type: 'post',
+        url: 'http://' + hostName + '/provisioning/Provisioning/ajaxPostBaseInfo',
+        dataType: 'json',
+        async: false,
+        data: {
+            role: role,
+            currentStep: currentStep,
+            //common info
+            firstname: firstname,
+            lastname: lastname,
+            gender: gender,
+            email: email,
+            username: username,
+            password: password,
+            birthday: birthday,
+            //sbirthday: sbirthday,
+            title: title,
+            tcountry: tcountry,
+            email_vertify: email_vertify,
+            password_vertify: password_vertify
+                    //country: country
+
+
+        },
+        success: function(msg) {
+
+            flag = msg;
+
+        }, error: function(msg) {
+            flag = msg;
+        }
+    });
+
+    if (flag == true) {
+        return true;
+    } else {
+        return false;
+    }
+
+}
+
+//form submit validation check :email ; password
+//return :true/false 
+function checkEmail(role) {
+
+
+    //var role = $('input[name="role"]:checked', '#join-modal').val();  
+
+    //check email
+    var email = $('.step[data-role="' + role + '"] #email');
+    var email_vertify = $('.step[data-role="' + role + '"] #email_vertify');
+
+    if (email.val() != email_vertify.val()) {
+
+        alert("The email addresses you have entered do not match, please re-enter them. ");
+        email.val("");
+        email_vertify.val("");
+        email.focus();
+
+        return false;
+    }
+
+    var regEmail = /[a-z0-9-]{1,30}@[a-z0-9-]{1,65}.[a-z]{3}/;
+
+    var emailFlag = regEmail.test(email.val());
+
+    if (!emailFlag) {
+
+        alert("Please enter correct Email-address.");
+        email.val("");
+        email_vertify.val("");
+        email.focus();
+
+        return false;
+    }
+
+    //check password 
+    var password = $('.step[data-role="' + role + '"] #password');
+    var email_vertify = $('.step[data-role="' + role + '"] #password_vertify');
+
+    if (password.val() != email_vertify.val()) {
+
+        alert("The password you have entered do not match, please re-enter them. ");
+        password.val("");
+        email_vertify.val("");
+        password.focus();
+
+        return false;
+    }
+
+    var regForASCII = /^[x00-x7f]+$/;
+
+    if (!regForASCII.test(password.val())) {
+
+        alert("The password you've requested does not match the ePals password requirements, please choose another password.");
+
+        return false;
+    }
+
+    var passwordLength = password.val().toString().length;
+
+    if (passwordLength < 6) {
+
+        alert("The password you've requested does not match the ePals password requirements, please choose another password.");
+        password.val("");
+        email_vertify.val("");
+        password.focus();
+
+        return false;
+    }
+
+    return true;
+
+}
+
+function validateCheck(role, currentStep) {
+
+    var flag;
+    if (role != "student" && currentStep == "2") {
+        flag = ajaxPostBaseInfo(role, currentStep);
+
+    } else if (role == "student" && currentStep == "3") {
+
+        flag = ajaxPostBaseInfo(role, currentStep);
+    } else {
+
+        flag = true;
+    }
+
+    return flag;
+}
+
+function onChangeLanguageOtherCheckbox(self) {
+
+    if (self.checked === true) {
+        //user once select the checkbox
+        $('#join-modal .continue').attr("disabled", "disabled");
+        $('#join-modal .finish').attr("disabled", "disabled");
+        $(self).parent().next("input").focus();
+
+    } else {
+
+        $('#join-modal .continue').removeAttr("disabled");
+        $('#join-modal .finish').removeAttr("disabled");
+    }
+
+}
+
+function onBlurLanguageOtherInput(self) {
+    var sval = $.trim(self.value);
+    if (sval) {
+        $('#join-modal .continue').removeAttr("disabled");
+        $('#join-modal .finish').removeAttr("disabled");
+    } else {
+        $('#join-modal .continue').attr("disabled", "disabled");
+        $('#join-modal .finish').attr("disabled", "disabled");
+    }
+}
