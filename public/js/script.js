@@ -1,5 +1,5 @@
 // true: ignore look up ,capture, validation plugin
-var debugFlag = true;
+var debugFlag = false;
 
 var hostName = window.location.host;
 
