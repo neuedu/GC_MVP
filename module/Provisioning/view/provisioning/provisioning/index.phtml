@@ -29,7 +29,7 @@ function swi($char,$var)
 ?>
 
 
-﻿<!DOCTYPE html>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -207,7 +207,7 @@ function swi($char,$var)
 
               <div class="form-row">
                 <label for="birthday"><?php echo swi('Birthday',$tra);?></label>
-                <input type="date" name="birthday" placeholder="YYYY-MM-DD" value="" id="birthday">
+                <input class="Wdate" onClick="WdatePicker()" onClick="WdatePicker()" type="date" name="birthday" placeholder="YYYY-MM-DD" value="" id="birthday">
               </div>
 
               <div class="form-row">
@@ -635,7 +635,7 @@ function swi($char,$var)
 
               <div class="form-row">
                 <label for="birthday"><?php echo swi('Birthday',$tra);?></label>
-                <input type="date" name="birthday" placeholder="YYYY-MM-DD" value="" id="birthday">
+                <input class="Wdate" onClick="WdatePicker()" onClick="WdatePicker()" name="birthday" placeholder="YYYY-MM-DD" value="" id="birthday">
               </div>
 <!--
               <div class="form-row">
@@ -959,7 +959,7 @@ function swi($char,$var)
 
               <div class="form-row">
                 <label for="birthday"><?php echo swi('Birthday',$tra);?></label>
-                <input type="date" name="birthday" placeholder="YYYY-MM-DD" value="" id="student-birthday">
+                <input class="Wdate" onClick="WdatePicker()" name="birthday" placeholder="YYYY-MM-DD" value="" id="student-birthday">
               </div>
 
             </div>
@@ -1359,7 +1359,7 @@ function swi($char,$var)
 
               <div class="form-row">
                 <label for="birthday"><?php echo swi('Birthday',$tra);?></label>
-                <input type="date" name="birthday" value="" id="birthday" placeholder="YYYY-MM-DD">
+                <input class="Wdate" onClick="WdatePicker()" name="birthday" value="" id="birthday" placeholder="YYYY-MM-DD">
               </div>
 
               <div class="form-row">
@@ -1845,6 +1845,8 @@ function swi($char,$var)
     <script type="text/javascript" src="<?=$publicDir?>js/regist_validate<?=$js_validate?>.js"></script>
     <script type="text/javascript" src="<?=$publicDir?>js/jquery.metadata.js"></script>
     
+    <!-- date validator -->
+    <script language="javascript" type="text/javascript" src="<?=$publicDir?>js/My97DatePicker/WdatePicker.js"></script>
 
     
     
