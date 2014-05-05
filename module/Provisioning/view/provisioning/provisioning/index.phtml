@@ -50,7 +50,7 @@ function swi($char,$var)
   <body class="non-auth-bck">
     <!-- <div class="fold-line fold-at-768"></div> -->
     <div class="container">
-<select id="lan" onchange="language()">
+<select id="lan" onchange="language3()">
             <option value =""><?php echo swi('language',$tra);?></option>
             <option value ="chinese">汉语</option>
             <option value ="english">English</option>
@@ -1855,7 +1855,7 @@ function swi($char,$var)
 <script type="text/javascript">
     
     
-    function language()
+    function language3()
     {
         var hostName = window.location.host ;
         var s = $("#lan").val();
@@ -1865,7 +1865,7 @@ function swi($char,$var)
                 url: 'http://'+hostName+'/application/Index/test',
                 dataType: 'json',
                 data: {
-                    language:s+'.php',
+                    language:s+'.php'
                 }
                    
             });

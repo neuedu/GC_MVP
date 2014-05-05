@@ -14,7 +14,7 @@
 
 ?>
 
-<select id="lan" onchange="language()">
+<select id="lan" onchange="language1()">
   <option value =""><?php echo swi('language',$var);?></option>
   <option value ="chinese">汉语</option>
   <option value ="english">English</option>
@@ -39,9 +39,9 @@
     </form>
 </div>
 
-<script>
+<script type="text/javascript">
     
-    function language()
+    function language1()
     {
         var hostName = window.location.host ;
         var s = $("#lan").val();
@@ -51,10 +51,10 @@
                 url: 'http://'+hostName+'/application/Index/test',
                 dataType: 'json',
                 data: {
-                    language:s+'.php',
+                    language:s+'.php'
                 }
                    
-            });
-            window.location.reload();
+        });
+        window.location.reload();
     }
-    </script>
+</script>

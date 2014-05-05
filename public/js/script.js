@@ -4,11 +4,11 @@ var debugFlag = false;
 var hostName = window.location.host;
 
 jQuery(document).ready(function() {
-
+    
     //identify code init
 
     $(function() {
-
+        
         btnContinue.removeAttr("disabllocaled");
 
         identifyCodeInput.blur(function() {
@@ -124,6 +124,7 @@ jQuery(document).ready(function() {
 
     // full screen hero (v4a) ---------------------------- //
     if ($('.full-screen-hero').length) {
+        alert('full-screen-hero');
         var jumbotronContainer = $('.jumbotron-container');
         var jumbotron = $('.jumbotron');
 
@@ -226,7 +227,6 @@ jQuery(document).ready(function() {
     // --------------------------------------------------- //
     // join                                                //
     // --------------------------------------------------- //
-
     if ($('.non-auth-bck').length) {
 
         var currentStep = 1;
@@ -249,9 +249,9 @@ jQuery(document).ready(function() {
         var btnAddStudent = $('#join-modal .add-student');
         var btnFinish = $('#join-modal .finish');
 
-        var btnJoin = $('header .btn-join');
-        var btnComplete = $('header .btn-complete');
-        var btnUser = $('header .btn-user');
+        var btnJoin = $('.btn-join');
+        var btnComplete = $('.btn-complete');
+        var btnUser = $('.btn-user');
 
         var identifyCodeInput = $('input[name="captcha_field"]');
 
@@ -314,6 +314,7 @@ jQuery(document).ready(function() {
 
         //click join epals community
         btnJoin.click(function(event) {
+            
             var roles = new Array();
             var flag = event;
             $.ajax({
@@ -670,14 +671,13 @@ jQuery(document).ready(function() {
                 data: {
                     role: role,
                     currentStep: currentStep,
-                    //common info
                     firstname: firstname,
                     lastname: lastname,
                     birthday: birthday,
-                    uemail: uemail,
+                    uemail: uemail
                 },
                 success: function(msg) {
-                    //alert('后台响应:' + msg);
+
                 }
             });
 
@@ -866,7 +866,7 @@ jQuery(document).ready(function() {
         var uasIncrement = 10;
 
         if (roleIndex >= 0 && qStep != '') {
-            $('header .btn-join').click();
+            $('.btn-join').click();
 
             // set surrent step and role
             currentStep = 1 * qStep;
@@ -1064,11 +1064,11 @@ jQuery(document).ready(function() {
         if (panelList.size() < 1) {
             panelList = accordion;
         }
-
+        
         panelList.each(function() {
-
+            
             if ($(this).find("input#student_first").val() != "") {
-
+                
                 var jsonSubObj = new Object();
                 jsonSubObj['student_first'] = $(this).find("input#student_first").val();
                 jsonSubObj['student_last'] = $(this).find("input#student_last").val();
@@ -1166,7 +1166,7 @@ jQuery(document).ready(function() {
             },
             failed: function(msg) {
                 //alert('failed' );
-            },
+            }
         });
 
 
@@ -1176,6 +1176,7 @@ jQuery(document).ready(function() {
     $(function() {
 
         //template use
+
         /*
          if(debugFlag){
          
@@ -1188,6 +1189,7 @@ jQuery(document).ready(function() {
          return ;
          }
          */
+
 
     });
 
