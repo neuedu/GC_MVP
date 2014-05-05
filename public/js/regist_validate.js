@@ -26,7 +26,7 @@ jQuery(document).ready(function() {
             }
             error.appendTo(element.parent());
             
-        },
+        }
     });
     
     jQuery.validator.addMethod("isZipCode", function(value, element) {  
@@ -54,7 +54,7 @@ jQuery(document).ready(function() {
     });
     
     jQuery.validator.addMethod("notUnOne", function(value, element) {  
-        var tel = "-1"
+        var tel = "-1";
         return this.optional(element) || (value != tel);
     }, "Please select a option");
 
@@ -105,7 +105,7 @@ jQuery(document).ready(function() {
                 dateISO:true
             },
             country: {
-                notUnOne: true,
+                notUnOne: true
             }
         },
         messages: {
@@ -173,7 +173,7 @@ jQuery(document).ready(function() {
                 required: true
             },
             country: {
-                notUnOne: true,
+                notUnOne: true
             }
         },
         messages: {
@@ -193,7 +193,7 @@ jQuery(document).ready(function() {
                 required: "Please enter your school ZIP"
             },
             country: {
-                notUnOne: "Please select country",
+                notUnOne: "Please select country"
             }
         }
     });
@@ -205,18 +205,32 @@ jQuery(document).ready(function() {
         rules1 = {
             class_subject: {
                 required: true
+            },
+            number_of_students: {
+                required: true               
             }
         };
         
         messages1 = {
             class_subject: {
                 required: "Please enter class subject."
+            },
+            number_of_students: {
+                required: "Please enter the number of student."
             }
         };
 
         // input blue validate
         for(var data in rules1) {
             $(this).on("blur", "[name='" + data + "']", function() {
+                if(data=='number_of_students')
+                {
+                    var res = isNaN($(this).val());
+                    if(res)
+                    {
+                        $(this).val('');
+                    }
+                }
                 inputCheck($(this));
             });
         }
@@ -314,7 +328,7 @@ jQuery(document).ready(function() {
                 required: true                
             },
             country: {
-                notUnOne: true,
+                notUnOne: true
             }
             
         },
@@ -389,18 +403,32 @@ jQuery(document).ready(function() {
         rules2 = {
             class_title: {
                 required: true
+            },
+            number_of_students: {
+                required: true               
             }
         };
         
         messages2 = {
             class_title: {
                 required: "Please enter class subject."
+            },
+            number_of_students: {
+                required: "Please enter the number of student."
             }
         };
 
         // input blue validate
         for(var data in rules2) {
             $(this).on("blur", "[name='" + data + "']", function() {
+                if(data=='number_of_students')
+                {
+                    var res = isNaN($(this).val());
+                    if(res)
+                    {
+                        $(this).val('');
+                    }
+                }
                 inputCheck($(this));
             });
         }
@@ -560,10 +588,10 @@ jQuery(document).ready(function() {
                 required: true
             },
             country: {
-                notUnOne: true,
+                notUnOne: true
             },
             your_grade: {
-                notUnOne: true,
+                notUnOne: true
             }
         },
         messages: {
