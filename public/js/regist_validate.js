@@ -244,7 +244,7 @@ jQuery(document).ready(function() {
             // error message
             var msg = "";
             // trim this value
-            var thisValue = thisItem.val().trim();
+            var thisValue = $.trim(thisItem.val());
 
             // null validate
             if (rules1[itemName].required) {
@@ -428,7 +428,7 @@ jQuery(document).ready(function() {
             // error message
             var msg = "";
             // trim this value
-            var thisValue = thisItem.val().trim();
+            var thisValue = $.trim(thisItem.val());
 
             // null validate
             if (rules2[itemName].required) {
@@ -837,7 +837,7 @@ jQuery(document).ready(function() {
             // error message
             var msg = "";
             // trim this value
-            var thisValue = thisItem.val().trim();
+            var thisValue = $.trim(thisItem.val());
 
             // null validate
             if (rules[itemName].required) {
