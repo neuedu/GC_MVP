@@ -199,7 +199,7 @@ jQuery(document).ready(function() {
     });
     
     //teacher step 3
-    $("#form-teacher-3").validate();
+    $("#form-teacher-3").validate({debug:true});
 
     $("#form-teacher-3").each(function() {
         rules1 = {
@@ -397,7 +397,7 @@ jQuery(document).ready(function() {
         }
     });
     //teacher_homeschool step 3 spam[]
-     $("#form-teacher_homeschool-3").validate();
+     $("#form-teacher_homeschool-3").validate({debug:true});
 
     $("#form-teacher_homeschool-3").each(function() {
         rules2 = {
@@ -707,6 +707,11 @@ jQuery(document).ready(function() {
             }
         }
     });
+    
+    $("#form-parent-2").validate({
+            debug:true
+        }
+    );
     
     $("#form-parent-2").each(function() {
         rules = {
