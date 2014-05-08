@@ -22,7 +22,7 @@ use ePals\UserAttribute;
 
 require_once ('class.phpmailer.php');
 require_once ('module.php');
-
+ini_set("error_reporting", E_COMPILE_ERROR|E_RECOVERABLE_ERROR|E_ERROR|E_CORE_ERROR);
 class ProvisioningController extends AbstractActionController {
 
     public function indexAction() {
@@ -119,7 +119,7 @@ class ProvisioningController extends AbstractActionController {
         $config = new \Zend\Config\Config(require ROOT_PATH . '/config/api.php');
 
         // get roles
-        $roles = new RoleLookup();
+        $roles = new RoleLookup(null);
         $roles->set_hostname($config->lookup_apiserver->url);
         $roles->set_app_id($config->lookup_apiserver->app_id);
         $roles->set_app_key($config->lookup_apiserver->app_key);
