@@ -223,7 +223,7 @@ jQuery(document).ready(function() {
         // input blue validate
         for(var data in rules1) {
             $(this).on("blur", "[name='" + data + "']", function() {
-                if(data=='number_of_students')
+                if(this.name=='number_of_students')
                 {
                     var res = isNaN($(this).val());
                     if(res)
@@ -421,7 +421,7 @@ jQuery(document).ready(function() {
         // input blue validate
         for(var data in rules2) {
             $(this).on("blur", "[name='" + data + "']", function() {
-                if(data=='number_of_students')
+                if(this.name=='number_of_students')
                 {
                     var res = isNaN($(this).val());
                     if(res)
