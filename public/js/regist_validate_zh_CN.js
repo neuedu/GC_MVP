@@ -3,8 +3,11 @@
  
  */
 
+var userExistURL = 'http://'+window.location.host+'/provisioning/Provisioning/ifUserNotExist';
+
 jQuery(document).ready(function() {
-    (function ($) {
+
+(function ($) {
 	$.extend($.validator.messages, {
 		required: "必填信息",
 		remote: "请修正该信息",
@@ -31,6 +34,20 @@ jQuery(document).ready(function() {
     jQuery.validator.setDefaults({
         submitHandler: function(form) {
             
+        },
+        errorPlacement:function(error,element){
+            
+            var errorSize = error.html().length ;
+            
+            if(element.attr("id") == "teaching_environment"){
+                
+            }else if( element.width()>166 || errorSize >=33 ){
+                    
+                //error.css("margin-left","156px");  
+                
+            }
+            error.appendTo(element.parent());
+            
         }
     });
     
@@ -38,6 +55,16 @@ jQuery(document).ready(function() {
         var tel = /^[0-9]{6}$/;
         return this.optional(element) || (tel.test(value));
     }, "wrong zip code");
+    
+    
+    jQuery.validator.addMethod("regexASCII",function(value,element,params){
+        
+        var regForASCII = /^[x00-x7f]+$/;
+        
+        var exp = new RegExp(regForASCII);
+        
+        return exp.test(value);
+    });
     
     //set our own REG
     
@@ -49,7 +76,7 @@ jQuery(document).ready(function() {
     });
     
     jQuery.validator.addMethod("notUnOne", function(value, element) {  
-        var tel = "-1"
+        var tel = "-1";
         return this.optional(element) || (value != tel);
     }, "Please select a option");
 
@@ -71,19 +98,20 @@ jQuery(document).ready(function() {
                 required: true
             },
             username: {
-                required: true
-                
+                required: true, 
+                remote:userExistURL
             },
             gender: "notUnOne",
             password:{
                 required: true,
-                minlength: 6
+                minlength: 6,
+                regexASCII: true
             },
             password_vertify:{
                 required: true,
                 minlength: 6,
-                equalTo: "#form-teacher-1 #password"
-                
+                equalTo: "#form-teacher-1 #password",
+                regexASCII: true
             },
             email: {
                 required: true,
@@ -98,28 +126,29 @@ jQuery(document).ready(function() {
                 required: true,
                 dateISO:true
             },
-            country:{
-                
+            country: {
+                notUnOne: true
             }
         },
         messages: {
-            country: "请选择一个城市",
             gender:"请选择您的性别",
             firstname: "请输入您的姓氏",
             lastname: "请输入您的名字",
             username: {
-                required: "请输入您的用户名"
+                required: "请输入您的用户名",
+                remote:"用户名已被使用，请重新输入"
                 
             },
             password: {
                 required: "请提供一个密码",
-                minlength: "您的密码至少六位长"
+                minlength: "您的密码至少六位长",
+                regexASCII: "您输入的密码不符合epals规范，请重新输入"
             },
             password_vertify:{
                 required: "请提供一个密码",
                 minlength: "您的密码至少六位长",
-                equalTo: "请输入与上面相同的密码"
-                
+                equalTo: "请输入与上面相同的密码",
+                regexASCII: "您输入的密码不符合epals规范，请重新输入"
             },
             email: {
                 required: "请输入您的邮箱",
@@ -134,6 +163,9 @@ jQuery(document).ready(function() {
                 required: "请提供您的生日",
                 dateISO: "请输入合法的日期"
                 
+            },
+            country: {
+                notUnOne: "请选择一个城市" 
             }
             
            
@@ -161,6 +193,9 @@ jQuery(document).ready(function() {
             },
             school_zip: {
                 required: true
+            },
+            country: {
+                notUnOne: true
             }
         },
         messages: {
@@ -178,6 +213,9 @@ jQuery(document).ready(function() {
             },
             school_zip: {
                 required: "Please enter your school ZIP"
+            },
+            country: {
+                notUnOne: "Please select country"
             }
         }
     });
@@ -191,7 +229,7 @@ jQuery(document).ready(function() {
                 required: true
             },
             number_of_students: {
-                required: true
+                required: true               
             }
         };
         
@@ -207,7 +245,7 @@ jQuery(document).ready(function() {
         // input blue validate
         for(var data in rules1) {
             $(this).on("blur", "[name='" + data + "']", function() {
-                if(this.name=='number_of_students')
+                if(data=='number_of_students')
                 {
                     var res = isNaN($(this).val());
                     if(res)
@@ -229,9 +267,9 @@ jQuery(document).ready(function() {
         });
 
         /**
-	* input validate
-	* @param {selector} thisItem this input
-	*/
+        * input validate
+        * @param {selector} thisItem this input
+        */
         function inputCheck(thisItem) {
             var itemName = thisItem.attr("name");
 
@@ -276,7 +314,6 @@ jQuery(document).ready(function() {
     
     
     
-    
     //teacher_homeschool step 1
     $("#form-teacher_homeschool-1").validate({
         debug:true,
@@ -285,17 +322,20 @@ jQuery(document).ready(function() {
             firstname: "required",
             lastname: "required",
             username: {
-                required: true                
+                required: true,
+                remote:userExistURL
             },
             gender: "notUnOne",
             password:{
                 required: true,
-                minlength: 6
+                minlength: 6,
+                regexASCII: true
             },
             password_vertify: {
                 required: true,
                 minlength: 6,
-                equalTo: "#form-teacher_homeschool-1 #password"
+                equalTo: "#form-teacher_homeschool-1 #password",
+                regexASCII: true
             },
             email: {
                 required: true,
@@ -309,29 +349,30 @@ jQuery(document).ready(function() {
             birthday: {
                 required: true                
             },
-            country:{
-                
+            country: {
+                notUnOne: true
             }
             
         },
         messages: {
-            country: "请选择一个城市",
             gender:"请选择您的性别",
             firstname: "请输入您的姓氏",
             lastname: "请输入您的名字",
             username: {
-                required: "请输入您的用户名"
+                required: "请输入您的用户名",
+                remote:"用户名已被使用，请重新输入"
                 
             },
             password: {
                 required: "请提供一个密码",
-                minlength: "您的密码至少六位长"
+                minlength: "您的密码至少六位长",
+                regexASCII: "您输入的密码不符合epals规范，请重新输入"
             },
             password_vertify:{
                 required: "请提供一个密码",
                 minlength: "您的密码至少六位长",
-                equalTo: "请输入与上面相同的密码"
-                
+                equalTo: "请输入与上面相同的密码",
+                regexASCII: "您输入的密码不符合epals规范，请重新输入"
             },
             email: {
                 required: "请输入您的邮箱",
@@ -346,14 +387,20 @@ jQuery(document).ready(function() {
                 required: "请提供您的生日",
                 dateISO: "请输入合法的日期"
                 
-            }          
+            },
+            country: {
+                notUnOne: "请选择一个城市" 
+            }
+           
         }
     });
     //teacher_homeschool step 2
     $("#form-teacher_homeschool-2").validate({
         debug:true,
         rules: {
-            teaching_environment: "notUnOne",
+            teaching_environment: {
+                notUnOne : true
+            },
             firstname: "required",
             lastname: "required",
             address_line_1: "required",
@@ -364,7 +411,7 @@ jQuery(document).ready(function() {
             country: "notUnOne"    
         },
         messages: {
-            teaching_environment:"Please select your teaching environment",
+            teaching_environment:"Please select teaching environment",
             firstname: "Please enter your firstname",
             lastname: "Please enter your lastname",
             address_line_1: "Please enter your first address",
@@ -377,8 +424,7 @@ jQuery(document).ready(function() {
         }
     });
     //teacher_homeschool step 3 spam[]
-
-    $("#form-teacher_homeschool-3").validate({debug:true});
+     $("#form-teacher_homeschool-3").validate({debug:true});
 
     $("#form-teacher_homeschool-3").each(function() {
         rules2 = {
@@ -386,7 +432,7 @@ jQuery(document).ready(function() {
                 required: true
             },
             number_of_students: {
-                required: true
+                required: true               
             }
         };
         
@@ -402,7 +448,7 @@ jQuery(document).ready(function() {
         // input blue validate
         for(var data in rules2) {
             $(this).on("blur", "[name='" + data + "']", function() {
-                if(this.name=='number_of_students')
+                if(data=='number_of_students')
                 {
                     var res = isNaN($(this).val());
                     if(res)
@@ -424,9 +470,9 @@ jQuery(document).ready(function() {
         });
 
         /**
-	* input validate
-	* @param {selector} thisItem this input
-	*/
+        * input validate
+        * @param {selector} thisItem this input
+        */
         function inputCheck(thisItem) {
             var itemName = thisItem.attr("name");
 
@@ -465,7 +511,6 @@ jQuery(document).ready(function() {
         }
     });
     
-    
     //student
     
     //student step 1
@@ -485,7 +530,7 @@ jQuery(document).ready(function() {
                 required: "请提供您的生日",
                 dateISO: "请输入合法的日期"
                 
-            }          
+            }                   
         }
     });
     
@@ -494,16 +539,19 @@ jQuery(document).ready(function() {
        debug:true,
         rules: {
             username: {
-                required: true                
+                required: true,
+                remote:userExistURL
             },
             password:{
                 required: true,
-                minlength: 6
+                minlength: 6,
+                regexASCII: true
             },
             password_vertify: {
                 required: true,
                 minlength: 6,
-                equalTo: "#form-student-2 #password"
+                equalTo: "#form-student-2 #password",
+                regexASCII: true
             },
             email: {
                 required: true,
@@ -515,24 +563,26 @@ jQuery(document).ready(function() {
                 equalTo: "#form-student-2 #email"
             },
             country:{
-                
+                notUnOne: true
             }
             
         },
-        messages: {    
+        messages: {
             username: {
-                required: "请输入您的用户名"
+                required: "请输入您的用户名",
+                remote:"用户名已被使用，请重新输入"
                 
             },
             password: {
                 required: "请提供一个密码",
-                minlength: "您的密码至少六位长"
+                minlength: "您的密码至少六位长",
+                regexASCII: "您输入的密码不符合epals规范，请重新输入"
             },
             password_vertify:{
                 required: "请提供一个密码",
                 minlength: "您的密码至少六位长",
-                equalTo: "请输入与上面相同的密码"
-                
+                equalTo: "请输入与上面相同的密码",
+                regexASCII: "您输入的密码不符合epals规范，请重新输入"
             },
             email: {
                 required: "请输入您的邮箱",
@@ -542,8 +592,11 @@ jQuery(document).ready(function() {
                 required: "请输入您的邮箱",
                 email:"请提供一个可用的邮箱",
                 equalTo: "请提供与上面相同的邮箱"
-            }       ,
-            country: "请选择一个城市"
+            },
+            country: {
+                notUnOne: "请选择一个城市" 
+            }
+           
         }
     });
     
@@ -566,6 +619,12 @@ jQuery(document).ready(function() {
             },
             school_zip: {
                 required: true
+            },
+            country: {
+                notUnOne: true
+            },
+            your_grade: {
+                notUnOne: true
             }
         },
         messages: {
@@ -583,7 +642,9 @@ jQuery(document).ready(function() {
             },
             school_zip: {
                 required: "Please enter your school ZIP"
-            }
+            },
+            country: "Please select your country",
+            your_grade: "Please select your grade"
         }
     });
     
@@ -612,19 +673,21 @@ jQuery(document).ready(function() {
                 required: true
             },
             username: {
-                required: true
+                required: true,
+                remote:userExistURL
                 
             },
             gender: "notUnOne",
             password:{
                 required: true,
-                minlength: 6
+                minlength: 6,
+                regexASCII: true
             },
             password_vertify:{
                 required: true,
                 minlength: 6,
-                equalTo: "#form-parent-1 #password"
-                
+                equalTo: "#form-parent-1 #password",
+                regexASCII: true
             },
             email: {
                 required: true,
@@ -645,20 +708,21 @@ jQuery(document).ready(function() {
             gender:"请选择您的性别",
             firstname: "请输入您的姓氏",
             lastname: "请输入您的名字",
-            country: "请选择一个城市",
             username: {
-                required: "请输入您的用户名"
+                required: "请输入您的用户名",
+                remote:"用户名已被使用，请重新输入"
                 
             },
             password: {
                 required: "请提供一个密码",
-                minlength: "您的密码至少六位长"
+                minlength: "您的密码至少六位长",
+                regexASCII: "您输入的密码不符合epals规范，请重新输入"
             },
             password_vertify:{
                 required: "请提供一个密码",
                 minlength: "您的密码至少六位长",
-                equalTo: "请输入与上面相同的密码"
-                
+                equalTo: "请输入与上面相同的密码",
+                regexASCII: "您输入的密码不符合epals规范，请重新输入"
             },
             email: {
                 required: "请输入您的邮箱",
@@ -673,7 +737,10 @@ jQuery(document).ready(function() {
                 required: "请提供您的生日",
                 dateISO: "请输入合法的日期"
                 
-            }          
+            },
+            country: {
+                notUnOne: "请选择一个城市" 
+            }
         }
     });
     
@@ -826,9 +893,9 @@ jQuery(document).ready(function() {
         });
 
         /**
-	* input validate
-	* @param {selector} thisItem this input
-	*/
+        * input validate
+        * @param {selector} thisItem this input
+        */
         function inputCheck(thisItem) {
             var itemName = thisItem.attr("name");
 
@@ -881,7 +948,7 @@ jQuery(document).ready(function() {
                 }
             }
             
-            // remote repeat
+            // remote repeat 
             if (rules[itemName].remote) {
                 if (!isError) {
                     $.ajax({
@@ -919,6 +986,5 @@ jQuery(document).ready(function() {
             return isError;
         }
     });
+
 });
-
-
