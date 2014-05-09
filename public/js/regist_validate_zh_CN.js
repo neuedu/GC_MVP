@@ -183,7 +183,96 @@ jQuery(document).ready(function() {
     });
     
     //teacher step 3
-    $("#form-teacher-3").validate();
+    $("#form-teacher-3").validate({debug:true});
+
+    $("#form-teacher-3").each(function() {
+        rules1 = {
+            class_subject: {
+                required: true
+            },
+            number_of_students: {
+                required: true
+            }
+        };
+        
+        messages1 = {
+            class_subject: {
+                required: "Please enter class subject."
+            },
+            number_of_students: {
+                required: "Please enter the number of student."
+            }
+        };
+
+        // input blue validate
+        for(var data in rules1) {
+            $(this).on("blur", "[name='" + data + "']", function() {
+                if(this.name=='number_of_students')
+                {
+                    var res = isNaN($(this).val());
+                    if(res)
+                    {
+                        $(this).val('');
+                    }
+                }
+                inputCheck($(this));
+            });
+        }
+
+        // form submit validate
+        $(this).bind('submit', function() {
+            for(var data in rules1) {
+                $(this).find("[name='" + data + "']").each(function() {
+                    inputCheck($(this));
+                });
+            }
+        });
+
+        /**
+	* input validate
+	* @param {selector} thisItem this input
+	*/
+        function inputCheck(thisItem) {
+            var itemName = thisItem.attr("name");
+
+            var isError = false;
+            // error label
+            var errorLabel = thisItem.next("label.error");
+            var hasErrorLabel = errorLabel.length;
+            // error message
+            var msg = "";
+            // trim this value
+            var thisValue = $.trim(thisItem.val());
+
+            // null validate
+            if (rules1[itemName].required) {
+                if (!isError && !thisValue) {
+                    isError = true;
+                    msg = messages1[itemName].required;
+                }
+            }
+            // error
+            if (isError) {
+                if (!hasErrorLabel) {
+                    // no error label then init error label
+                    thisItem.after("<label class='error' for='" + itemName + "'></label>");
+                    errorLabel = thisItem.next("label.error");
+                }
+                errorLabel.html(msg);
+                errorLabel.show();
+            } else {
+                if (hasErrorLabel) {
+                    errorLabel.hide();
+                }
+            }
+
+            return isError;
+        }
+    });
+    
+    $("#form-teacher-4").validate({
+        debug:true
+    });
     
     
     
@@ -288,7 +377,94 @@ jQuery(document).ready(function() {
         }
     });
     //teacher_homeschool step 3 spam[]
-     $("#form-teacher_homeschool-3").validate();
+
+    $("#form-teacher_homeschool-3").validate({debug:true});
+
+    $("#form-teacher_homeschool-3").each(function() {
+        rules2 = {
+            class_title: {
+                required: true
+            },
+            number_of_students: {
+                required: true
+            }
+        };
+        
+        messages2 = {
+            class_title: {
+                required: "Please enter class subject."
+            },
+            number_of_students: {
+                required: "Please enter the number of student."
+            }
+        };
+
+        // input blue validate
+        for(var data in rules2) {
+            $(this).on("blur", "[name='" + data + "']", function() {
+                if(this.name=='number_of_students')
+                {
+                    var res = isNaN($(this).val());
+                    if(res)
+                    {
+                        $(this).val('');
+                    }
+                }
+                inputCheck($(this));
+            });
+        }
+
+        // form submit validate
+        $(this).bind('submit', function() {
+            for(var data in rules2) {
+                $(this).find("[name='" + data + "']").each(function() {
+                    inputCheck($(this));
+                });
+            }
+        });
+
+        /**
+	* input validate
+	* @param {selector} thisItem this input
+	*/
+        function inputCheck(thisItem) {
+            var itemName = thisItem.attr("name");
+
+            var isError = false;
+            // error label
+            var errorLabel = thisItem.next("label.error");
+            var hasErrorLabel = errorLabel.length;
+            // error message
+            var msg = "";
+            // trim this value
+            var thisValue = $.trim(thisItem.val());
+
+            // null validate
+            if (rules2[itemName].required) {
+                if (!isError && !thisValue) {
+                    isError = true;
+                    msg = messages2[itemName].required;
+                }
+            }
+            // error
+            if (isError) {
+                if (!hasErrorLabel) {
+                    // no error label then init error label
+                    thisItem.after("<label class='error' for='" + itemName + "'></label>");
+                    errorLabel = thisItem.next("label.error");
+                }
+                errorLabel.html(msg);
+                errorLabel.show();
+            } else {
+                if (hasErrorLabel) {
+                    errorLabel.hide();
+                }
+            }
+
+            return isError;
+        }
+    });
+    
     
     //student
     
@@ -501,7 +677,11 @@ jQuery(document).ready(function() {
         }
     });
     
-    //parent step 2
+    $("#form-parent-2").validate({
+            debug:true
+        }
+    );
+    
     $("#form-parent-2").each(function() {
         rules = {
             student_first: {
@@ -512,16 +692,18 @@ jQuery(document).ready(function() {
             },
             student_username: {
                 required: true,
-                remote: "http://localhost/provisioning/Provisioning/ifUserNotExist"
+                remote: userExistURL
             },
             password: {
                 required: true,
-                minlength: 6
+                minlength: 6,
+                regexASCII: true
             },
             password_vertify:{
                 required: true,
                 minlength: 6,
-                equalTo: "#student_password"
+                equalTo: "#student_password",
+                regexASCII: true
             },
             student_birthday: {
                required: true,
@@ -563,12 +745,14 @@ jQuery(document).ready(function() {
             },
             password: {
                 required: "Please provide a password.",
-                minlength: "The password you've requested does not match the ePals password requirements, please choose another password."
+                minlength: "The password you've requested does not match the ePals password requirements, please choose another password.",
+                regexASCII: "The password you've requested does not match the ePals password requirements, please choose another password."
             },
             password_vertify:{
                 required: "Please provide a password.",
                 minlength: "The password you've requested does not match the ePals password requirements, please choose another password.",
-                equalTo: "The passwords you have entered do not match, please re-enter them."
+                equalTo: "The passwords you have entered do not match, please re-enter them.",
+                regexASCII: "The password you've requested does not match the ePals password requirements, please choose another password."
             },
             student_birthday: {
                required: "Please provide your birthday.",
@@ -612,9 +796,9 @@ jQuery(document).ready(function() {
                 });
             }
             $(this).find(".school_type_div").each(function() {
-            // error label
-            var errorLabel = $(this).next("label.error");
-            var hasErrorLabel = errorLabel.length;
+                // error label
+                var errorLabel = $(this).next("label.error");
+                var hasErrorLabel = errorLabel.length;
                 if (!$(this).find("input[type='checkbox']:checked").size()) {
                     
                     // error
@@ -633,8 +817,8 @@ jQuery(document).ready(function() {
                     }
                 }
                 
-                
-                
+                // hide error label in div
+                $(this).find("label.error").hide();
             });
             if($(this).find("label.error:visible").size()>0){
                 return false;
@@ -642,9 +826,9 @@ jQuery(document).ready(function() {
         });
 
         /**
-        * input validate
-        * @param {selector} thisItem this input
-        */
+	* input validate
+	* @param {selector} thisItem this input
+	*/
         function inputCheck(thisItem) {
             var itemName = thisItem.attr("name");
 
@@ -655,7 +839,7 @@ jQuery(document).ready(function() {
             // error message
             var msg = "";
             // trim this value
-            var thisValue = thisItem.val().trim();
+            var thisValue = $.trim(thisItem.val());
 
             // null validate
             if (rules[itemName].required) {
@@ -689,7 +873,15 @@ jQuery(document).ready(function() {
                 }
             }
             
-            // remote repeat 
+            // ascii validate
+            if (rules[itemName].regexASCII) {
+                if (!isError && !(/^[x00-x7f]+$/.test(thisValue))) {
+                    isError = true;
+                    msg = messages[itemName].regexASCII;
+                }
+            }
+            
+            // remote repeat
             if (rules[itemName].remote) {
                 if (!isError) {
                     $.ajax({
@@ -727,7 +919,6 @@ jQuery(document).ready(function() {
             return isError;
         }
     });
-
 });
 
 
