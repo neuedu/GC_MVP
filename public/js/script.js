@@ -1408,14 +1408,14 @@ function ajaxPostBaseInfo(role, currentStep) {
     var firstname = $('.step[data-role="' + role + '"] #firstname').val();
     var lastname = $('.step[data-role="' + role + '"] #lastname').val();
     var gender = $('.step[data-role="' + role + '"] #gender').val();
-    var email = $('.step[data-role="' + role + '"] #email').val();
-    var username = $('.step[data-role="' + role + '"] #username').val();
+    var email = $('.step[data-role="' + role + '"] #email').val().toLowerCase();
+    var username = $('.step[data-role="' + role + '"] #username').val().toLowerCase();
     var password = $('.step[data-role="' + role + '"] #password').val();
     var birthday = $('.step[data-role="' + role + '"] #birthday').val();
     var title = $('.step[data-role="' + role + '"] #title').val();
     var tcountry = $('.step[data-role="' + role + '"] select[name="tcountry"]').val();
 
-    var email_vertify = $('.step[data-role="' + role + '"] #email_vertify').val();
+    var email_vertify = $('.step[data-role="' + role + '"] #email_vertify').val().toLowerCase();
     var password_vertify = $('.step[data-role="' + role + '"] #password_vertify').val();
 
     var flag;
